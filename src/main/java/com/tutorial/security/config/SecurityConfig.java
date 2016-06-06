@@ -1,5 +1,7 @@
 package com.tutorial.security.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,9 +11,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
+	private DataSource dataSource;
+
+	//Manual way
+	/*
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication().withUser("admin").password("admin").roles("USER"); // ...
 																							// etc.
+	} */
+	
+	//With database connection
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth
+			.jdbcAuthentication()
+				.dataSource(dataSource)
+				.usersByUsernameQuery("SELECT username,PASSWORD,enabled FROM users WHERE username = ?")
+				.authoritiesByUsernameQuery("SELECT username,authority FROM authorities WHERE username = ?");
 	}
 	
 	@Override
@@ -25,6 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/hallo")
                 .and()
                 .logout();
-        
+     
     }
 }

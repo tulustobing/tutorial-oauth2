@@ -6,6 +6,9 @@
 </head>
 <body>
 	<h1>Welcome to hello page</h1>
+	<form name="f" th:action="@{/logout}" method="post">
+		<input type="submit" value="Logout" />
+	</form>
 	<h2>
 		Waktu saat ini adalah : <span th:text="${waktu}"></span>
 	</h2>
